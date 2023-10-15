@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">الزًاد</string>
+    <string name="next_salat">الصلاة القادمة</string>
+    <string name="hidjri_today_date">1 ربيع الاول 1444 </string>
+    <string name="miladi_today_date">11 مارس 2023 </string>
+    <string name="prayer_times">اوقات الصلاة</string>
+    <string name="more">المزيد</string>
+    <string name="last_reading">اخر قراءة</string>
+    <string name="last_listening">اخر استماع</string>
+    <string name="khatma_progress_percentage">مقدار التقدم في الختمة</string>
+    <string name="search_for_sora">ابحث عن سورة </string>
+    <string name="search_for_ayah">ابحث عن اية </string>
+    <string name="search_for_reciter">ابحث عن قارئ </string>
+    <string name="morning_prayers">أذكار الصباح</string>
+    <string name="evening_prayers">اذكار المساء</string>
+    <string name="waking_up_prayers">الاستيقاض و النوم</string>
+    <string name="sleeping_prayers">اذكار النوم </string>
+        <string name="ablution_and_salat_prayers">الوضوء و الصلاة</string>
+    <string name="home_prayers">اذكار الاهل و البيت</string>
+    <string name="eating_and_drinking_prayers">الطعام و الشراب</string>
+    <string name="joy_and_fear_prayers">الفرح و الخوف</string>
+    <string name="traveling_prayers">اذكار السفر</string>
+    <string name="illness_prayers">اذكار المرض </string>
+    <string name="elhadj_and_elomra_prayers">الحج و العمرة</string>
+    <string name="dealing_and_etiquette">التعامل و الاداب</string>
+    <string name="other_prayers">ادعية اخرى </string>
+    <string name="binary_mode_text">عرض  مزدوج </string>
+    <string name="normal_mode_text">عرض عادي -كل القراء </string>
+    <string name="notification_channel_name">quran notification</string>
+    <string name="shared_text">شارك الذكر في وسائل التواصل الاجتماعي</string>
+    <string name="about_the_app">حول التطبيق</string>
+    <string name="app_description_title">نبذة عن التطبيق</string>
+    <string name="rate_the_app">قيم التطبيق</string>
+    <string name="share_the_app">شارك التطبيق</string>
+    <string name="tech_support">الدعم الفني</string>
+    <string name="social_media">شبكات التواصل</string>
+    <string name="telegram">تيليغرام</string>
+    <string name="facebook">فيسبوك</string>
+    <string name="instagram">انستغرام</string>
+    <string name="app_version">"زاد  الاصدار:  1.0.0   "</string>
+        <string name="app_description">تطبيق زاد  هو تطبيق اسلامي غير ربحي و خال من الاعلانات يضم كل ما يحتاجه المسلم من قران صوتى و مسموع بالاضافة الى الاذكار اوقات الصلاة و القبلة و غيرها الكثير من الخائص...</string>
+    <string name="settings">الاعدادات</string>
+    <string name="location">الموقع :</string>
+    <string name="method_of_calculation">طريقة حساب مواقيت الصلاة</string>
+
+</resources>
