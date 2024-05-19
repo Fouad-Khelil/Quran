@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quran.R
@@ -42,7 +43,7 @@ fun DecorationLastViewItem(
             contentDescription = "decoration"
         )
         Column(horizontalAlignment = Alignment.Start, modifier = Modifier.padding(start = 12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, ) {
                 Icon(
                     painter = painterResource(id = icon),
                     tint = Color.White,
@@ -54,7 +55,7 @@ fun DecorationLastViewItem(
                     fontSize = 20.sp,
                     fontFamily = hafs_uthmanic_font,
                     color = Color.White,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold ,
                 )
             }
 
@@ -62,7 +63,9 @@ fun DecorationLastViewItem(
                 text = "$hizbOrMokri - $sora",
                 fontSize = 16.sp,
                 fontFamily = hafs_uthmanic_font,
-                color = Color.White
+                color = Color.White ,
+                overflow = TextOverflow.Clip,
+                maxLines = 1
             )
         }
 
@@ -96,7 +99,7 @@ fun DecorationMain(
                 .clickable {
                     onClickLastListening()
                 },
-            sora = "السورة رقم $lastListeningSurah",
+            sora = "السورة $lastListeningSurah",
             hizbOrMokri = lastReciter,
             lastAction = R.string.last_listening,
             icon = R.drawable.ic_play_outlined

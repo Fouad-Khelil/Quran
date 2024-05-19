@@ -20,7 +20,7 @@ class QuranSource @Inject constructor (
 
     var surahs = emptyList<MediaMetadataCompat>()
 
-    suspend fun fetchMediaData(reciterId : Int) = withContext(Dispatchers.Main) {
+    suspend fun fetchMediaData(reciterId : Int) = withContext(Dispatchers.Default) {
         state = State.STATE_INITIALIZING
         Dispatchers.IO
         val allReciterSurahs = audioRepository.getAllSora(reciterId)

@@ -28,7 +28,10 @@ interface AyahDao {
     fun getPageByPageNumber(page : Int) : List<AyahEntity>
 
     @Query("SELECT surahs.name FROM surahs JOIN ayahs ON surahs.number = ayahs.surahIndex WHERE ayahs.page = :page ORDER BY ayahs.number ASC LIMIT 1")
-    fun getSurahByPage(page : Int) : String?
+    fun getSurahInPage(page : Int) : String?
+
+    @Query("SELECT DISTINCT surahs.name FROM surahs JOIN ayahs ON surahs.number = ayahs.surahIndex WHERE ayahs.page = :page ORDER BY ayahs.number ASC")
+    fun getSurahNames(page : Int) : List<String>
 
 
     //when searching for ayah

@@ -36,10 +36,10 @@ fun SplashScreen(
     scaledegree: Float = 1f,
     painter: Painter
 ) {
-    val scale = remember {
-        Animatable(0f)
-    }
-    var isLogoVisible by remember { mutableStateOf(true) }
+//    val scale = remember {
+//        Animatable(0f)
+//    }
+//    var isLogoVisible by remember { mutableStateOf(true) }
 
     val isdbBuilt by splashViewModel.isdbBuilt.collectAsState()
     val context = LocalContext.current
@@ -71,31 +71,32 @@ fun SplashScreen(
 //        }
     }
 
-    LaunchedEffect(key1 = true) {
-        scale.animateTo(
-            scaledegree,
-            animationSpec = tween(
-                durationMillis = 200,
-                easing = {
-                    OvershootInterpolator(2f).getInterpolation(it)
-                }
-            )
-        )
-        delay(500)
-        isLogoVisible = false
-        delay(2000)
-    }
+//    LaunchedEffect(key1 = true) {
+//        scale.animateTo(
+//            scaledegree,
+//            animationSpec = tween(
+//                durationMillis = 200,
+//                easing = {
+//                    OvershootInterpolator(2f).getInterpolation(it)
+//                }
+//            )
+//        )
+//        delay(500)
+//        isLogoVisible = false
+//        delay(2000)
+//    }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        if (isLogoVisible) {
-            Image(
-                painter = painter,
-                contentDescription = "",
-                Modifier
-                    .clip(shape = RoundedCornerShape(50.dp))
-                    .scale(scale.value)
-                    .size((140.dp))
-            )
-        } else {
+//        if (isLogoVisible) {
+//            Image(
+//                painter = painter,
+//                contentDescription = "",
+//                Modifier
+//                    .clip(shape = RoundedCornerShape(50.dp))
+//                    .scale(scale.value)
+//                    .size((140.dp))
+//            )
+//        } else {
+        if(isdbBuilt==false){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -106,6 +107,8 @@ fun SplashScreen(
                 Text(text = splashViewModel.getIsDbBuilt().toString(), fontSize = 18.sp)
             }
         }
+
+//        }
 
     }
 }

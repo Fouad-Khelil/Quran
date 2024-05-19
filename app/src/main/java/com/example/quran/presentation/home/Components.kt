@@ -80,12 +80,12 @@ fun CardMain(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = hijriDate,
+                    text = hijriDate +" "+ "ه",
                     style = textStyle1,
                 )
 
                 Text(
-                    text = date,
+                    text = date+ " "+ "م",
                     style = textStyle1,
                 )
             }
@@ -115,8 +115,9 @@ fun PrayerTimeItem(
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
             .background(backgroundColor)
+            .then(modifier)
             .padding(vertical = 7.dp, horizontal = 12.dp)
-            .then(modifier),
+        ,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -133,7 +134,6 @@ fun PrayerTimeItem(
 @Composable
 fun PrayerTimesRow(times: List<String>, prayerTimeIndex: Int = 2) {
     Column {
-
         Text(
             text = stringResource(id = R.string.prayer_times),
             fontSize = 18.sp,
@@ -214,7 +214,7 @@ fun TodayItem(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Start
         ) {
             Row {
                 Icon(
@@ -233,12 +233,12 @@ fun TodayItem(
                         append(" - " + source)
                     })
             }
-            Text(
-                text = stringResource(id = R.string.more),
-                fontSize = 18.sp,
-                color = MaterialTheme.colors.primary,
-                fontFamily = hafs_uthmanic_font
-            )
+//            Text(
+//                text = stringResource(id = R.string.more),
+//                fontSize = 18.sp,
+//                color = MaterialTheme.colors.primary,
+//                fontFamily = hafs_uthmanic_font
+//            )
         }
 
         Text(

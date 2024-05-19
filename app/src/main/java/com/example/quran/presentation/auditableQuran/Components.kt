@@ -460,42 +460,23 @@ fun TimePickDialog(
 fun ReciterImage(
     imageUrl: String?,
 ) {
-    var isLoading by remember { mutableStateOf(true) }
-    var isError by remember { mutableStateOf(false) }
-    val imageLoader = rememberAsyncImagePainter(
-        model = imageUrl,
-        onState = { state ->
-            isLoading = state is AsyncImagePainter.State.Loading
-            isError = state is AsyncImagePainter.State.Error
-        },
-    )
-    val isLocalInspection = LocalInspectionMode.current
     Box(
         modifier = Modifier.size(56.dp),
         contentAlignment = Alignment.Center,
     ) {
-        if (isLoading) {
-            // Display a progress bar while loading
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(36.dp),
-                color = MaterialTheme.colors.primary,
-            )
-        }
 
-        Image(
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
             modifier = Modifier
                 .height(56.dp)
                 .clip(MaterialTheme.shapes.small),
             contentScale = ContentScale.Crop,
-            painter = if (isError.not() && !isLocalInspection) {
-                imageLoader
-            } else {
-                painterResource(R.drawable.img_error)
-            },
-            // TODO b/226661685: Investigate using alt text of  image to populate content description
             contentDescription = null, // decorative image,
+            placeholder = painterResource(id = R.drawable.img_error),
+            error = painterResource(id = R.drawable.img_error),
         )
     }
 }

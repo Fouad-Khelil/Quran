@@ -24,10 +24,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.quran.R
+import com.example.quran.data.repository.DataStoreRepository
 import com.example.quran.others.AyahPrettyTextTransformer
 import com.example.quran.others.Constants
 import com.example.quran.others.isItInDarkTheme
@@ -45,11 +49,21 @@ import com.example.quran.ui.theme.noto_arabic_font
 import com.example.quran.ui.theme.thulth_font
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HadithScreen(navController: NavController) {
+    val context = LocalContext.current
+
+    val pagerState = rememberPagerState(initialPage = DataStoreRepository(context).getLastHadithIndex()) // to change
+
+    DisposableEffect(key1 = Unit){
+        onDispose {
+            DataStoreRepository(context).saveLastHadithIndex(pagerState.currentPage)
+        }
+    }
 
     Scaffold(topBar = {
         Row(
@@ -73,7 +87,7 @@ fun HadithScreen(navController: NavController) {
             )
         }
     }) {
-        HorizontalPager(count = Constants.NAWAWI_HADITH.size) { index ->
+        HorizontalPager(count = Constants.NAWAWI_HADITH.size , state = pagerState) { index ->
 
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Card(

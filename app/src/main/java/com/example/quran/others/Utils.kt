@@ -8,6 +8,7 @@ import android.location.Geocoder
 import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 import com.example.quran.data.data_source.Entities.NameOfAllahEntity
 import com.example.quran.data.data_source.local.dataClasses.adhkar.Adhkar
@@ -117,7 +118,6 @@ fun formatLong(value: Long): String {
     val dateFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
     return dateFormat.format(value)
 }
-
 
 @Composable
 fun isItInDarkTheme(): Boolean {

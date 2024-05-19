@@ -49,10 +49,7 @@ fun ThikrDetailScreen(
     }
 
 
-    LazyColumn {
-        item {
-            Spacer(modifier = Modifier.height(9.dp))
-        }
+    LazyColumn(contentPadding = PaddingValues(top = 9.dp , bottom = 56.dp)) {
         items(allThikrByCategory) { thikr ->
             ThikrDetailItem(
                 thikr.zekr,

@@ -83,6 +83,7 @@ fun BottomNavigationBar(
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
+    isDarkTheme : Boolean ,
     onThemeUpdated: (Int) -> Unit
 ) {
 
@@ -146,7 +147,8 @@ fun NavigationGraph(
                 surahIndex,
                 page,
                 navController,
-                onThemeUpdated
+                onThemeUpdated,
+                isDarkTheme =isDarkTheme
             )
         }
 

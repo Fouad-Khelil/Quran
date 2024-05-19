@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 
 
+
 // light theme
 val primaryColor = Color(0xff2ED18E)
 val primaryVarient = Color(0xff57DBA5)

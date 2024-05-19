@@ -2,6 +2,13 @@ package com.example.quran.others
 
 object Constants {
 
+    const val SURAH_ALFATIHA =1
+    const val SURAH_ALTAWBA =9
+    const val ALFATIHA = "سورة الفاتحة"
+    const val ALTAWBA ="سورة التوبة"
+    const val BASMALAH= "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ "
+
+    //
     const val AYAY_NUMBER = 6236
     const val THIKR_NUMBER = 337
     const val  NAMES_OF_ALLAH_NUMBER = 99
@@ -30,7 +37,7 @@ object Constants {
 
     /////////////////////////////////////////////
 
-    const val PACKAGE_NAME = "com.example.quran"
+    const val PACKAGE_NAME = "https://drive.google.com/drive/folders/1II5M_XQhv9bsTXJXWk3KULqJ7v0gX-OY?usp=drive_link"
     const val FACEBOOK_LINK = "https://www.facebook.com/profile.php?id=100067661810432"
     const val TELEGRAM_LINK = "https://t.me/fouad_khelil"
     const val INSTAGRAM_LINK = "https://www.instagram.com/fouad.khl/"
@@ -126,7 +133,7 @@ object Constants {
     val DUAL_LIST = listOf(
         SurahDualMode(
             reciter = "ابو بكر الشاطري",
-            photo ="https://quran.com.kw/wp-content/uploads/abobakr-alshatry.jpg" ,
+            photo ="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgMaT5slgnCkUZOb6sqk8Wn71acgHSrD1nUKBGMwn8XMg1b90egOX-zcDB1Q&s" ,
             surahIndex = 55,
             numberOfAyahs = 78,
             surah = "الرحمان",
@@ -158,7 +165,7 @@ object Constants {
         ),
         SurahDualMode(
             reciter = "ياسر الدوسري",
-            photo = "https://quran.com.kw/wp-content/uploads/yaser-aldousarui.jpg",
+            photo = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT6jWRic80SdpM4KL3-ndi79xh5sEkWckqOe5tKwKBumf7toHUAQnS8zzpDA&s",
             surahIndex = 23,
             numberOfAyahs = 118,
             surah = "المؤمنون",
@@ -196,7 +203,7 @@ object Constants {
     val THIKR_REQUEST_LIST = mapOf(
         "أذكار الصباح" to listOf("أذكار الصباح"),
         "أذكار المساء" to listOf("أذكار الصباح"),
-        "الاستيقاض و النوم" to listOf(
+        "الاستيقاظ و النوم" to listOf(
             "أذكار الاستيقاظ من النوم",
             "أذكار النوم",
         ),
@@ -232,13 +239,13 @@ object Constants {
             "دعاء الصائم إذا حضر الطعام ولم يفطر",
             "التعريض بالدعاء لطلب الطعام أو الشراب",
         ),
-        "اذكار السفر" to listOf(
+        "أذكار السفر" to listOf(
             "دعاء السفر",
             "التكبير و التسبيح في سير السفر",
             "ذكر الرجوع من السفر",
         ),
         //------
-        "اذكار الاهل و البيت" to listOf(
+        "أذكار الاهل و البيت" to listOf(
 
             "الذكر عند الخروج من المنزل",
             "الذكر عند دخول المنزل",

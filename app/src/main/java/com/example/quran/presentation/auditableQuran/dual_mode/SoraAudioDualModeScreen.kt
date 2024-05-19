@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context.POWER_SERVICE
 import android.os.PowerManager
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Animatable
@@ -41,12 +42,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.quran.R
 import com.example.quran.others.Constants
+import com.example.quran.presentation.readableQuran.findActivity
+import com.example.quran.presentation.splash.ConnectionState
+import com.example.quran.presentation.splash.connectivityState
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -68,6 +75,10 @@ fun SoraAudioDualMode(
     val alpha = remember { Animatable(initialValue = 1f) }
 
     val context = LocalContext.current
+
+    val window = remember { context.findActivity()?.window }
+
+    val insetsController = remember { WindowCompat.getInsetsController(window!!, window.decorView) }
 
     val exoPlayer = viewModel.exoPlayer
     val concatenatingMediaSource = viewModel.concatenatingMediaSource
@@ -109,15 +120,32 @@ fun SoraAudioDualMode(
 
     // Play when the screen is visible
     DisposableEffect(Unit) {
+        insetsController.apply {
+            hide(WindowInsetsCompat.Type.navigationBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         exoPlayer.play()
         onDispose {
             exoPlayer.stop()
             exoPlayer.clearMediaItems()
+            insetsController.apply {
+                show(WindowInsetsCompat.Type.navigationBars())
+            }
+        }
+    }
+    val connection by connectivityState()
+
+    val isConnected = connection === ConnectionState.Available
+
+    LaunchedEffect(key1 = true){
+        if(!isConnected) {
+            Toast.makeText(context, "تاكد من اتصالك بالانترنت", Toast.LENGTH_SHORT).show()
         }
     }
 
 
     Box(contentAlignment = Alignment.Center) {
+
         Image(
             modifier = Modifier
                 .fillMaxSize()
@@ -154,7 +182,7 @@ fun SoraAudioDualMode(
                     .padding(18.dp)
                     .clip(MaterialTheme.shapes.medium)
                     .background(Color.White)
-                    .padding(vertical = 4.dp, horizontal = 8.dp) ,
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
                 color = Color.Black
             )
         }
@@ -247,3 +275,29 @@ fun generateUrls(reciterIndex: Int) =
             .padStart(3, '0') + it.toString().padStart(3, '0') + ".mp3"
     }
 
+
+@Composable
+fun ConnectionStatusBar(isConnected: Boolean, isConnectedConsumed: Boolean) {
+    Box(modifier = Modifier.padding(vertical = 6.dp)) {
+
+        AnimatedVisibility(visible = isConnected && !isConnectedConsumed) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+//                    .background(Color.Green),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Connected", color = Color.Green)
+            }
+        }
+
+        AnimatedVisibility(visible = !isConnected) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+//                    .background(Color.Red),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Not Connected", color = Color.Red)
+            }
+        }
+    }
+}

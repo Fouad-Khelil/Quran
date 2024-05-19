@@ -22,6 +22,7 @@ import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,12 +58,17 @@ fun SettingScreen(
 ) {
 
     val context = LocalContext.current
-    var fontSize by remember { mutableStateOf(Constants.INITIAL_FONT_SIZE) }
+    var fontSize by remember { mutableStateOf(DataStoreRepository(context).getFontSize()) }
     var isEnabled by remember { mutableStateOf(DataStoreRepository(context).getAppBarSetting()) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedMethod by remember { mutableStateOf(DataStoreRepository(context).getCalculationMethod()) }
 
+    var locationname by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(key1 = true){
+       locationname= DataStoreRepository(context).getLocationName(context)
+    }
 
     Column(
         Modifier
@@ -90,9 +96,7 @@ fun SettingScreen(
             DataStoreRepository(context).setAppBarSetting(isEnabled)
         }
 
-        SettingItem(text = R.string.location , expendedText = "الجزائر العاصمة") {
-
-        }
+        SettingItem(text = R.string.location , expendedText =locationname.ifEmpty {"الموقع الافتراضي : الجزائر العاصمة"  } ) {}
 
         SettingItem(
             text = R.string.method_of_calculation,

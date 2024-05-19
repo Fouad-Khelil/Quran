@@ -62,16 +62,16 @@ fun MainScreen(
     val prayertimes = mainScreenViewModel.getPrayerTimes(datastore.getCalculationMethod())
     val nextPTIndex = prayertimes[5].toInt()
     Log.d("prayertimes", "MainScreen: $nextPTIndex")
-    val nextPrayerTime = if (nextPTIndex <= 1) 1 else if (nextPTIndex == 2) 3 else nextPTIndex - 1
+    val nextPrayerTime = if (nextPTIndex <= 1) 1 else if (nextPTIndex == 2) 2 else nextPTIndex - 1
 
     val reciter = mainScreenViewModel.getLastReciter()
     val intent = Intent(context, QuranService::class.java).apply {
         putExtra("reciter", reciter.id)
     }
-    context.startService(intent)
     var lastReadingSurah by remember{ mutableStateOf("") }
 
     LaunchedEffect(key1 = true){
+        mainScreenViewModel.init()
         mainScreenViewModel.getLastReadingSurah{surah->
             lastReadingSurah=surah
         }
@@ -100,6 +100,7 @@ fun MainScreen(
             onClickLastReading = {
                 navController.navigate(Screen.QuranPaperScreen.createRoute(Constants.NAVIGATE_FROM_LAST_READING))
             }, onClickLastListening = {
+                context.startService(intent)
                 val encodedUrlPhoto =
                     URLEncoder.encode(reciter.photo, StandardCharsets.UTF_8.toString())
                 val encodedUrlServer =
@@ -119,13 +120,15 @@ fun MainScreen(
         khatmaProgressIndicator(mainScreenViewModel.getProgress())
         TodayItem(R.drawable.ic_aya, "اية", randomAyah.surah, randomAyah.ayah)
         TodayItem(
-            R.drawable.ic_book_, "حديث", "الأربعن النووية",
+            R.drawable.ic_book_, "حديث", "الأربعون النووية",
             randomHadith,
             fontFamily = noto_arabic_font,
             fontSize = 14.sp
         )
+
+        val extended_text = if (randomThikr.count == "1") "مرة" else if (randomThikr.count =="2") "مرتان" else if (randomThikr.count > "2") "${randomThikr.count}" + "مرات" else ""
         TodayItem(
-            R.drawable.dua_hands, "ذكر", " ${randomThikr.reference} - ${randomThikr.count}. مرات",
+            R.drawable.dua_hands, "ذكر", " ${randomThikr.reference} - "+ extended_text,
             content = randomThikr.zekr,
 //            "اللّهُـمَّ إِنِّـي أَصْبَـحْتُ أُشْـهِدُك , وَأُشْـهِدُ حَمَلَـةَ عَـرْشِـك , وَمَلَائِكَتَكَ , وَجَمـيعَ خَلْـقِك , أَنَّـكَ أَنْـتَ اللهُ لا إلهَ إلاّ أَنْـتَ وَحْـدَكَ لا شَريكَ لَـك , وَأَنَّ ُ مُحَمّـداً عَبْـدُكَ وَرَسـولُـك",
             fontFamily = noto_arabic_font,

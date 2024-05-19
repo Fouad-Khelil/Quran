@@ -40,6 +40,7 @@ fun AllSoraScreen(
     isAudio: Boolean = false,
     surahs: List<SoraItm>,
     onSearchSurah: (String) -> Unit,
+    searchedSurah : String ,
     onClickLastReading: () -> Unit,
     onClickPlayIcon: (SoraItm) -> Unit,
     onClickSora: (Int) -> Unit
@@ -65,8 +66,8 @@ fun AllSoraScreen(
                 hizbOrMokri,
                 lastAction,
                 icon,
-                searchedSora,
                 onSearchSurah,
+                searchedSurah = searchedSurah,
                 focusManager
             )
         }
@@ -105,11 +106,10 @@ private fun AllSurahsHeader(
     hizbOrMokri: String,
     lastAction: Int,
     icon: Int,
-    searchedSora: String,
     onSearchSurah: (String) -> Unit,
+    searchedSurah :String ,
     focusManager: FocusManager
 ) {
-    var searchedSora1 = searchedSora
     Column {
         DecorationLastViewItem(
             modifier = Modifier
@@ -127,9 +127,8 @@ private fun AllSurahsHeader(
 
         TextField(
             //                modifier = Modifier.focusRequester(focusRequester),
-            value = searchedSora1,
+            value = searchedSurah,
             onValueChange = { sora ->
-                searchedSora1 = sora
                 onSearchSurah(sora)
             },
             placeholder = {
@@ -161,7 +160,7 @@ private fun AllSurahsHeader(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     focusManager.clearFocus()
-                    onSearchSurah(searchedSora1)
+                    onSearchSurah(searchedSurah)
                 }
             ),
         )

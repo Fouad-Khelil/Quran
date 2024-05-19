@@ -12,8 +12,19 @@ object AyahPrettyTextTransformer {
     }
 
     //appendSpecialEndDecorators
-    fun appendAyahEndDecorator(ayah: AyahEntity): String {
-        val sb = StringBuilder(ayah.text)
+    fun addDecoratorsToAyah(ayah: AyahEntity): String {
+
+        // adding the t separator to split using it the beginning of each ayah
+        val ayahWithSeparator =
+            if (ayah.numberInSurah == 1) {
+                "\t" +
+                        if (ayah.surahIndex == Constants.SURAH_ALFATIHA || ayah.surahIndex == Constants.SURAH_ALTAWBA) ayah.text
+                        else ayah.text.removePrefix(Constants.BASMALAH)
+            } else {
+                ayah.text
+            }
+
+        val sb = StringBuilder(ayahWithSeparator)
         sb.append(
             MessageFormat.format(
                 " {0} \n",

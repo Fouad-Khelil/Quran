@@ -38,7 +38,7 @@ class AllSoraScreenViewModel @Inject constructor(
         if (surah.isBlank()) {
             _allSurahs.value = cachedListSurah
         }
-        _allSurahs.value = _allSurahs.value.filter { surahQuran ->
+        _allSurahs.value = cachedListSurah.filter { surahQuran ->
             surahQuran.soraName.contains(surah)
         }
     }
@@ -67,9 +67,9 @@ class AllSoraScreenViewModel @Inject constructor(
     fun getLastListeningSurah() = dataStoreRepository.getLastListeningSurah()
 
     fun getLastReadingSurah(onComplete: (String) -> Unit) {
+        val page = dataStoreRepository.getLastReadingPage()
         viewModelScope.launch(Dispatchers.IO) {
-            val page = dataStoreRepository.getLastReadingPage()
-            val surah= quranRepository.getSurahByPage(page) ?: "البقرة"
+            val surah= quranRepository.getSurahByPage(page)
             withContext(Dispatchers.Main) {
                 onComplete(surah) // Pass the result to the callback on the main thread
             }

@@ -6,21 +6,16 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.util.Log
-import android.view.KeyEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.Window
+import android.view.WindowInsets
 import android.view.animation.LinearInterpolator
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
@@ -28,22 +23,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -51,24 +39,22 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quran.R
 import com.example.quran.data.repository.DataStoreRepository
 import com.example.quran.navigation.Screen
 import com.example.quran.others.Constants
-import com.example.quran.others.colorMatrixWithBrightness
 import com.example.quran.others.isItInDarkTheme
 import com.example.quran.ui.theme.hafs_uthmanic_font
 import com.example.quran.ui.theme.onDarkBackground
 import com.example.quran.ui.theme.onSecondaryBackground
-import com.example.quran.ui.theme.primaryColor
 import com.example.quran.ui.theme.secondaryBackgroundColor
-import com.example.quran.ui.theme.secondaryDarkBackground
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -80,14 +66,17 @@ fun QuranPaperWithBottomCheetScreen(
     page: Int = 1,
     navController: NavController,
     onThemeUpdated: (Int) -> Unit,
+    isDarkTheme : Boolean,
     quranPaperViewModel: QuranPaperViewModel = hiltViewModel()
 ) {
     val sheetstate = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetstate)
 
+
     val pageofAyahs = quranPaperViewModel.pageAyahs
     val currentPage = quranPaperViewModel.currentPage
-    val currentSurah = quranPaperViewModel.currentSurah.collectAsState().value
+    val surahName = quranPaperViewModel.currentSurah.collectAsState().value
+    val surahNames = quranPaperViewModel.currentSurahNames.collectAsState().value
     val tafsirSurah = quranPaperViewModel.tafsirSurahName.collectAsState().value
 
 
@@ -101,11 +90,29 @@ fun QuranPaperWithBottomCheetScreen(
 
     val context = LocalContext.current
 
+
     var fontSize by remember { mutableStateOf(DataStoreRepository(context).getFontSize()) }
     var brightness by remember { mutableStateOf(0.5f) }
 
-    val window = context.findActivity()?.window
+    val window = remember{context.findActivity()?.window}
     val params = window?.attributes
+
+    val insetsController = remember{WindowCompat.getInsetsController(window!!, window.decorView)}
+
+
+    DisposableEffect(key1 = true){
+        insetsController.apply {
+            hide(WindowInsetsCompat.Type.navigationBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+        onDispose {
+            insetsController.apply {
+                show(WindowInsetsCompat.Type.navigationBars())
+            }
+        }
+    }
+
+
 
     val currentBrightness = params?.screenBrightness ?: 0.5f
 
@@ -132,16 +139,15 @@ fun QuranPaperWithBottomCheetScreen(
 
     LaunchedEffect(Unit) {
         if (surahIndex == Constants.NAVIGATE_FROM_LAST_READING) {
-            Log.d("scroll", "times")
             quranPaperViewModel.getLastReadingPage()
         } else if (surahIndex == Constants.NAVIGATE_FROM_SEARCH) {
             quranPaperViewModel.setCurrentPage(page)
         } else {
-            Log.d("page_result", "paper screen page:reputed ")
+            Log.d("page_result", "paper screen page:reputed")
             quranPaperViewModel.getSurahPage(surahIndex)
         }
-    }
 
+    }
 
     coroutineScope.launch {
         if (currentPage.value != 0) {
@@ -166,13 +172,12 @@ fun QuranPaperWithBottomCheetScreen(
         }
     }
 
-
     BottomSheetScaffold(
         topBar = {
-            if(DataStoreRepository(context).getAppBarSetting()){
+            if (DataStoreRepository(context).getAppBarSetting()) {
                 QuranTopBar(
                     navController,
-                    currentSurah,
+                    surahName,
                     onClickSettings = {
                         bottomSheetContentState = QuranBottomSheetState.SETTINGS
                         coroutineScope.launch {
@@ -187,7 +192,7 @@ fun QuranPaperWithBottomCheetScreen(
                 Divider(color = secondaryBackgroundColor)
             }
         },
-        sheetBackgroundColor =if(isItInDarkTheme()) MaterialTheme.colors.surface else Color.White,
+        sheetBackgroundColor = if (isItInDarkTheme()) MaterialTheme.colors.surface else Color.White,
         sheetContent = {
             if (bottomSheetContentState == QuranBottomSheetState.SETTINGS) {
                 SettingBottomSheet(
@@ -202,6 +207,7 @@ fun QuranPaperWithBottomCheetScreen(
                         brightness = it
                     },
                     onChangeTheme = onThemeUpdated
+
                 )
             } else if (bottomSheetContentState == QuranBottomSheetState.TAFSIR) {
                 if (tafseerList.value.isNotEmpty() && tafseerList.value.size > currentTafseerIndex) {
@@ -234,7 +240,9 @@ fun QuranPaperWithBottomCheetScreen(
 
             HorizontalPager(count = Constants.QURAN_NUMBRE_OF_PAGES, state = pagerState) { page ->
                 QuranPageScreen(
-                    pageofAyahs.value, page,
+                    pageofAyahs.value,
+                    page,
+                    surahNames = surahNames,
                     onShowAyahTafseer = { ayahIndexInPage ->
                         bottomSheetContentState = QuranBottomSheetState.TAFSIR
                         currentTafseerIndex = ayahIndexInPage - 1
@@ -248,6 +256,8 @@ fun QuranPaperWithBottomCheetScreen(
                         }
                     },
                     fontSize = fontSize.sp,
+                    isDarkTheme = isDarkTheme ,
+                    isStartingWithSurah = if (tafseerList.value.isNotEmpty()) tafseerList.value[0].numberInSurah == 1 else false
                 )
             }
         }
@@ -313,6 +323,9 @@ fun QuranPageScreen(
     pageofAyahs: String,
     page: Int = 1, // to implement later ,
     fontSize: TextUnit = 16.sp,
+    surahNames: List<String>,
+    isStartingWithSurah: Boolean,
+    isDarkTheme: Boolean,
     onShowAyahTafseer: (Int) -> Unit
 ) {
 
@@ -327,23 +340,19 @@ fun QuranPageScreen(
 
         var ayahnumber by remember { mutableStateOf(1) }
 
-        if (page < 2) {
-            BasmalahDecorationItem(
-                surah = "الاعراف",
-                surahNumber = 2,
-                numberOfAyahs = 5,
-            )
-        }
 
         QuranicText(
             fontSize = fontSize,
             quranicText = pageofAyahs,
+            surahNames = surahNames,
             selectedAyah = ayahnumber, // Set this to the currently selected ayah, or null if none
             onAyahSelected = { ayahNumber ->
                 // Handle the ayah selection event here
                 ayahnumber = ayahNumber
                 onShowAyahTafseer(ayahNumber)
-            }
+            },
+            isStartingWithSurah = isStartingWithSurah ,
+            isDarkTheme = isDarkTheme
         )
     }
 }
@@ -353,9 +362,8 @@ enum class QuranBottomSheetState {
     SETTINGS
 }
 
-
 @Composable
-fun QuranicText(
+fun QuranicText2(
     quranicText: String,
     selectedAyah: Int?,
     onAyahSelected: (Int) -> Unit,
@@ -400,6 +408,127 @@ fun QuranicText(
             textAlign = TextAlign.Justify
         ),
     )
+}
+
+@Composable
+fun SurahDecorator(surah: String , isDarkTheme :Boolean) {
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.surah_decorator),
+                contentDescription = null
+            )
+            Text(
+                surah,
+                color = if (isItInDarkTheme()) Color.White else Color.Black,
+                fontSize = 20.sp,
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        if (surah != Constants.ALFATIHA && surah != Constants.ALTAWBA) {
+            Icon(
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(43.dp),
+                painter = painterResource(id = R.drawable.ic_basmala),
+                contentDescription = "",
+                tint = if (isDarkTheme) Color.White else Color.Black
+            )
+        }
+    }
+
+}
+
+
+@Composable
+fun QuranicText(
+    quranicText: String,
+    selectedAyah: Int?,
+    onAyahSelected: (Int) -> Unit,
+    fontSize: TextUnit = 16.sp,
+    surahNames: List<String>,
+    isStartingWithSurah: Boolean ,
+    isDarkTheme: Boolean
+) {
+
+    quranicText.split("\t").forEachIndexed { index, part ->
+        val number =
+            part.split("\n").first().trim().takeLastWhile { it.isDigit() }//first ayah in surah
+        Log.d("qurantext", surahNames.toString())
+        if (number == "١") {
+
+            if (surahNames.first() != "الفاتحة") {
+
+                val i = if (isStartingWithSurah) index - 1 else index
+
+                if (i < surahNames.size && i >= 0) {
+                    SurahDecorator(surahNames[i], isDarkTheme )
+                }
+
+            }
+        }
+        ClickableText(
+            text = buildAnnotatedString {
+                part.split("\n").forEach { ayahText ->
+
+                    val number = ayahText.takeLastWhile { it.isDigit() || it.isWhitespace() }
+                    val ayah = ayahText.take(ayahText.length - number.length)
+
+                    withStyle(
+                        SpanStyle(
+                            fontSize = fontSize,
+                            color = if (isItInDarkTheme()) Color.LightGray else Color.Black
+                        )
+                    ) {
+                        append(ayah)
+                    }
+
+                    withStyle(     // ayah number styling
+                        SpanStyle(
+                            fontSize = fontSize,
+                            color = MaterialTheme.colors.primary
+                        )
+                    ) {
+                        append(number)
+                    }
+                }
+            },
+            onClick = { offset ->
+                // Determine which ayah was clicked based on the offset
+                Log.d("tafsirindex", "index : $index ")
+                Log.d("tafsirindex1", "offset : $offset ")
+                // previous parts ayah numbers + clicked ayah
+                val numberInSurah = part.substring(0, offset).count { it == '\n' } + 1
+                val numberOfPreviousAyahs = getNumberOfAyahsInPreviousParts(index, quranicText)
+                val clickedAyah = numberInSurah + numberOfPreviousAyahs
+                Log.d("tafsirindex2", "clicked : $clickedAyah ")
+                Log.d("tafsirindex3", "numberOfPreviousAyahs : $numberOfPreviousAyahs ")
+                onAyahSelected(clickedAyah)
+            },
+            style = TextStyle(
+                fontFamily = hafs_uthmanic_font,
+                fontWeight = FontWeight.Normal,
+                fontSize = fontSize,
+                textAlign = TextAlign.Justify
+            ),
+        )
+
+    }
+}
+
+fun getNumberOfAyahsInPreviousParts(index: Int, quranicText: String): Int {
+    var i = 0
+    if (index > 0) {
+        quranicText.split("\t").take(index).forEach {
+            i += it.split("\n").size
+        }
+    }
+    return i - index
 }
 
 @Composable

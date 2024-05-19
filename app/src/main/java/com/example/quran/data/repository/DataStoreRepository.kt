@@ -20,6 +20,8 @@ class DataStoreRepository(context: Context) {
         private const val IS_DB_BUILT = "is_db_built"
         private const val LAST_READING_PAGE = "last_reading_page"
         private const val LAST_LISTENING_ID = "last_listening_id"
+        private const val LAST_HADITH_INDEX = "last_hadith"
+        private const val LAST_NAME_OF_ALLAH_INDEX = "last_name"
         private const val IS_DARK_MODE = "is_dark_mode"
         private const val IS_FIRST_TIME = "is_first_time"
         private const val LATITUDE = "latitude"
@@ -44,6 +46,7 @@ class DataStoreRepository(context: Context) {
     fun saveIsDbBuilt(value: Boolean) {
         sharedPreferences.edit().putBoolean(IS_DB_BUILT, value).apply()
     }
+
 
     fun getIsDbBuilt(): Boolean {
         return sharedPreferences.getBoolean(IS_DB_BUILT, false)
@@ -102,7 +105,10 @@ class DataStoreRepository(context: Context) {
     suspend fun getLocationName(context: Context) :String {
         val lat =sharedPreferences.getString(LATITUDE, "") ?: ""
         val lng =sharedPreferences.getString(LONGTITUDE, "") ?: ""
-        return getAddressFromLatLngWithTimeout(lat.toDouble(),lng.toDouble(),context)
+
+        return if(lat.isEmpty() || lng.isEmpty()){ "" }else{
+            getAddressFromLatLngWithTimeout(lat.toDouble(),lng.toDouble(),context)
+        }
     }
 
     fun getLatAndLng(): LocationDetail {
@@ -136,6 +142,20 @@ class DataStoreRepository(context: Context) {
         return sharedPreferences.getInt(LAST_LISTENING_ID, 1)
     }
 
+    fun saveLastHadithIndex(hadithIndex: Int) {
+        sharedPreferences.edit().putInt(LAST_HADITH_INDEX, hadithIndex).apply()
+    }
+    fun saveLastNameOfAllahIndex(nameIndex: Int) {
+        sharedPreferences.edit().putInt(LAST_NAME_OF_ALLAH_INDEX, nameIndex).apply()
+    }
+
+    fun getLastHadithIndex(): Int {
+        return sharedPreferences.getInt(LAST_NAME_OF_ALLAH_INDEX, 0)
+    }
+
+    fun getLastNameOfAllahIndex(): Int {
+        return sharedPreferences.getInt(LAST_NAME_OF_ALLAH_INDEX, 0)
+    }
 
     fun saveLastReciter(reciterEntity: ReciterEntity) {
         sharedPreferences.edit().apply {

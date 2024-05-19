@@ -46,6 +46,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quran.R
 import com.example.quran.data.repository.DataStoreRepository
+import com.example.quran.presentation.splash.checkLocationSetting
+import com.example.quran.presentation.splash.getLocation
 import com.google.android.gms.location.LocationServices
 import kotlin.math.cos
 import kotlin.math.sin
@@ -77,7 +79,7 @@ fun QiblaScreen(
 
     val rotation = animateFloatAsState(
         targetValue = adjustedRotation + PHASE,
-        animationSpec = tween(easing = LinearOutSlowInEasing), label = ""
+        animationSpec = tween(easing = LinearOutSlowInEasing)
     ).value
 
 
@@ -85,10 +87,6 @@ fun QiblaScreen(
     val radiusInPixels = with(LocalDensity.current) { radius.toPx() }
     val context = LocalContext.current
     var location by remember { mutableStateOf("") }
-    
-    LaunchedEffect(key1 = Unit){
-        location =DataStoreRepository(context).getLocationName(context)
-    }
 
 
     val permissions = arrayOf(
@@ -113,21 +111,46 @@ fun QiblaScreen(
             Toast.makeText(context, "something is wrong", Toast.LENGTH_SHORT).show()
         }
     }
-    val launcherMultiplePermissions = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissionsMap ->
-        val areGranted = permissionsMap.values.reduce { acc, next -> acc && next }
-        if (areGranted) {
-        } else {
-            // Show dialog
+
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
+            val areGranted = permissionsMap.values.reduce { acc, next -> acc && next }
+            if (areGranted) {
+                Toast.makeText(context, "Permission Granted ", Toast.LENGTH_SHORT).show()
+                checkLocationSetting(
+                    context = context,
+                    onDisabled = { intentSenderRequest ->
+                        settingResultRequest.launch(intentSenderRequest)
+                    },
+                    onEnabled = {/* This will call when setting is already enabled */
+//                        isGpsEnabled = true
+                        getLocation(
+                            locationProvider,
+                            context,
+                            onLocationNull = {
+//                                isLocationNull = true
+                            },
+                            onLocationSuccess = { lat, lng ->
+                                DataStoreRepository(context).setLatAndLng(lat, lng)
+                                (context as? Activity)?.recreate()
+                            })
+                    }
+                )
+            } else {
+                Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+
         }
-    }
+
 
 
     LaunchedEffect(key1 = true) {
-        val loc = DataStoreRepository(context).getLatAndLng()
-        Log.d("finelocation", "location: $location , lat :${loc.lat}, lng: ${loc.lng}")
-        qiblaViewModel.initSensors()
+        location = DataStoreRepository(context).getLocationName(context)
+        if (location.isEmpty()) {
+            launcher.launch(permissions)
+        }else{
+            qiblaViewModel.initSensors()
+        }
 
 //        checkAndRequestLocationPermissions(context, permissions, launcherMultiplePermissions) {
 //            checkLocationSetting(
@@ -147,7 +170,7 @@ fun QiblaScreen(
 //        }
     }
 
-    if(qiblaViewModel.isQiblaSensorsExist) {
+    if (qiblaViewModel.isQiblaSensorsExist) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -166,7 +189,7 @@ fun QiblaScreen(
                     color = Color.White
                 )
                 Text(
-                    text = "105°",
+                    text = "",//must to be updated
                     fontSize = 36.sp,
                     color = Color.White
                 )
@@ -218,7 +241,7 @@ fun QiblaScreen(
 
     } else {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-           Text(text = "خاصية القبلة غير متوفرة في هاتفك")
+            Text(text = "خاصية القبلة غير متوفرة في هاتفك")
         }
     }
 

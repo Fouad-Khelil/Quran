@@ -82,14 +82,17 @@ class QuranAndThikrRepositoryImpl @Inject constructor(
         return quranDb.ayahDao.getPageBySurahNumAndAyahNum(surahIndex, ayahIndex)
     }
 
-    override fun getSurahByPage(page: Int): String? {
-        return quranDb.ayahDao.getSurahByPage(page)
+    override fun getSurahByPage(page: Int): String {
+        return quranDb.ayahDao.getSurahInPage(page) ?: "الفاتحة"
     }
 
     override fun getAyahBySurahNumAndAyahNum(surahIndex: Int, ayahIndex: Int): String {
         return quranDb.ayahDao.getAyahBySurahNumAndAyahNum(surahIndex,ayahIndex)
     }
 
+    fun getSurahNames(page : Int) : List<String>{
+        return quranDb.ayahDao.getSurahNames(page)
+    }
 
 
     fun getCount() = quranDb.thikrDao.getCount()

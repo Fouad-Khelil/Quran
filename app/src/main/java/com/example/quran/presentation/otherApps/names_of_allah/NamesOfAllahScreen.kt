@@ -21,6 +21,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quran.R
+import com.example.quran.data.repository.DataStoreRepository
 import com.example.quran.navigation.Screen
 import com.example.quran.others.AyahPrettyTextTransformer
 import com.example.quran.others.Constants
@@ -48,6 +51,7 @@ import com.example.quran.ui.theme.primaryColor
 import com.example.quran.ui.theme.thulth_font
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
 
 @OptIn(ExperimentalPagerApi::class)
@@ -58,9 +62,18 @@ fun NamesOfAllahScreen(
 ) {
 
     val allNames = namesViewModel.allNames.value
+    val context = LocalContext.current
+
+    val pagerState = rememberPagerState(initialPage = DataStoreRepository(context).getLastNameOfAllahIndex()) // to change
 
     LaunchedEffect(key1 = true) {
         namesViewModel.getAllNamesofAllah()
+    }
+
+    DisposableEffect(key1 = Unit){
+        onDispose {
+            DataStoreRepository(context).saveLastNameOfAllahIndex(pagerState.currentPage)
+        }
     }
 
     Scaffold(topBar = {
@@ -82,7 +95,7 @@ fun NamesOfAllahScreen(
         it
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             if (allNames.isNotEmpty()) {
-                HorizontalPager(count = Constants.NAMES_OF_ALLAH_NUMBER) { index ->
+                HorizontalPager(count = Constants.NAMES_OF_ALLAH_NUMBER , state = pagerState ) { index ->
                     val nameDescription =
                         AyahPrettyTextTransformer.removeUnsupportedChars(allNames[index].description)
                     NamesOfAllahCard(

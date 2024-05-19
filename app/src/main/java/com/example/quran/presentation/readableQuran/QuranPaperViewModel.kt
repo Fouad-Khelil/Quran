@@ -1,9 +1,9 @@
 package com.example.quran.presentation.readableQuran
 
 import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quran.data.data_source.Entities.AyahEntity
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class QuranPaperViewModel @Inject constructor(
     val quranRepo: QuranAndThikrRepositoryImpl,
     val dataStoreRepository: DataStoreRepository
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _pageAyahs = mutableStateOf("")
     val pageAyahs: State<String> = _pageAyahs
@@ -30,52 +30,59 @@ class QuranPaperViewModel @Inject constructor(
     private val _currentPage = MutableStateFlow(0)
     val currentPage: MutableStateFlow<Int> = _currentPage
 
-    private val _currentSurah = MutableStateFlow("")
+    private val _currentSurah = MutableStateFlow("الفاتحة")
     val currentSurah: MutableStateFlow<String> = _currentSurah
+
+    private val _currentSurahNames = MutableStateFlow(listOf("الفاتحة"))
+    val currentSurahNames: MutableStateFlow<List<String>> = _currentSurahNames
 
     private val _tafsirSurahName = MutableStateFlow("")
     val tafsirSurahName: MutableStateFlow<String> = _tafsirSurahName
 
     private val _isCurrentPageReady = mutableStateOf(false)
-    val isCurrentPageReady : State<Boolean> = _isCurrentPageReady
+    val isCurrentPageReady: State<Boolean> = _isCurrentPageReady
 
     private val _quranPageTafseerList = mutableStateOf<List<AyahEntity>>(listOf())
-    val quranPageTafseerList : State<List<AyahEntity>> = _quranPageTafseerList
+    val quranPageTafseerList: State<List<AyahEntity>> = _quranPageTafseerList
 
 
-
-
-
-    fun setCurrentPage(page:Int) {
-        _currentPage.value= page
+    fun setCurrentPage(page: Int) {
+        _currentPage.value = page
     }
 
-    fun getSurahByPage(page: Int){
+    fun getSurahByPage(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _currentSurah.value =quranRepo.getSurahByPage(page)?:""
+            _currentSurah.value = quranRepo.getSurahByPage(page)
+        }
+    }
+
+    fun getAllSurahInPage(page: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _currentSurahNames.value = quranRepo.getSurahNames(page)
         }
     }
 
     fun getSurahName(index: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _tafsirSurahName.value =quranRepo.getSurahName(index)
+            _tafsirSurahName.value = quranRepo.getSurahName(index)
         }
     }
 
     fun getSurahPage(surahIndex: Int) {
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val quranPage = quranRepo.getSurahFirstPage(surahIndex)
             val sbPage = StringBuilder()
-            if (quranPage.isNotEmpty()){
+            if (quranPage.isNotEmpty()) {
                 _currentPage.value = quranPage[0].page
+                getAllSurahInPage(_currentPage.value)
             }
             for (ayah in quranPage) {
                 ayah.text = AyahPrettyTextTransformer.removeUnsupportedChars(ayah.text)
-                sbPage.append(AyahPrettyTextTransformer.appendAyahEndDecorator(ayah))
+                sbPage.append(AyahPrettyTextTransformer.addDecoratorsToAyah(ayah))
             }
             _pageAyahs.value = sbPage.toString()
             _quranPageTafseerList.value = quranPage
-            _isCurrentPageReady.value =true
+            _isCurrentPageReady.value = true
             Log.d("paper", "index 1: ${surahIndex}")
             Log.d("paper", "index 2: ${_currentPage.value}")
 
@@ -88,17 +95,18 @@ class QuranPaperViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val sbPage = StringBuilder()
             val quranPage = quranRepo.getPageByPageNumber(page)
-            if (quranPage.isNotEmpty()){
+            if (quranPage.isNotEmpty()) {
                 _currentPage.value = quranPage[0].page
+                getAllSurahInPage(page)
             }
             Log.d("paper", "number : ${quranPage.size}")
             for (ayah in quranPage) {
                 ayah.text = AyahPrettyTextTransformer.removeUnsupportedChars(ayah.text)
-                sbPage.append(AyahPrettyTextTransformer.appendAyahEndDecorator(ayah))
+                sbPage.append(AyahPrettyTextTransformer.addDecoratorsToAyah(ayah))
             }
             _pageAyahs.value = sbPage.toString()
             _quranPageTafseerList.value = quranPage
-            _isCurrentPageReady.value =true
+            _isCurrentPageReady.value = true
             Log.d("paper", "number : ${_pageAyahs.value.isNotEmpty()}")
         }
     }
@@ -111,15 +119,15 @@ class QuranPaperViewModel @Inject constructor(
 
     fun getLastReadingPage() {
         viewModelScope.launch(Dispatchers.IO) {
-            _currentPage.value =dataStoreRepository.getLastReadingPage()
+            _currentPage.value = dataStoreRepository.getLastReadingPage()
             getQuranPage(_currentPage.value)
         }
     }
 
 
-    fun getPageOfAyah(page: Int){
+    fun getPageOfAyah(page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            _currentPage.value =page
+            _currentPage.value = page
             getQuranPage(_currentPage.value)
         }
     }
@@ -127,5 +135,10 @@ class QuranPaperViewModel @Inject constructor(
 //    fun getSurahByIndex (surahIndex: Int)  {
 //         quranRepo.getSurahName(surahIndex)
 //    }
-    
+
 }
+
+@Stable
+data class SurahNamesList(val surahs: List<String>)
+
+

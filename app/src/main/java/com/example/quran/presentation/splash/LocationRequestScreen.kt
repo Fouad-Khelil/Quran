@@ -148,7 +148,6 @@ fun LocationRequestScreen(
                 CircularProgressIndicator()
             }
         }
-
     }
     if(isLocationNull||!isConnected || !isGpsEnabled ){
         Column(

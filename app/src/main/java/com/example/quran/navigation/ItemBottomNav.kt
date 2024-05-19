@@ -17,6 +17,8 @@ sealed class ItemBottomNav(
     object Others : ItemBottomNav("Others",  R.drawable.other_apps,"others")
 }
 
+
+
 sealed class Screen(val route: String) {
     object SplashScreen : Screen("splash")
     object QuranPaperScreen : Screen("quran_paper?surah_index={surah_index}&page={page}") {

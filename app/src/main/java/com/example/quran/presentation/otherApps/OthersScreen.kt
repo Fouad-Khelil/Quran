@@ -48,7 +48,7 @@ fun OtherAppsScreen(navController: NavController) {
     val context = LocalContext.current
     OvalShape()
     Text(
-        text = "تطبيقات أخرى",
+        text = "أدوات أخرى",
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 18.dp),

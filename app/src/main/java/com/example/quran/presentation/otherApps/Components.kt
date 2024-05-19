@@ -35,7 +35,7 @@ fun IosSwitcher(
 ) {
         val offset by animateDpAsState(
             targetValue = if (isEnabled) 0.dp else 20.dp,
-            animationSpec = animationSpec, label = ""
+            animationSpec = animationSpec
         )
 
         Box(modifier = Modifier

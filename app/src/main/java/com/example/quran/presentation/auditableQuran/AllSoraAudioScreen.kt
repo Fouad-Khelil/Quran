@@ -47,6 +47,7 @@ fun AllSoraAudioScreen(
     var mediaItm by remember { mutableStateOf(Sora(mediaId = reciterName + "1")) }
     val playbackStateCompat = allSoraAudioViewModel.playbackState.value
     var offsetX by remember { mutableStateOf(0f) }
+    var searchedSurah by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -68,8 +69,10 @@ fun AllSoraAudioScreen(
             icon = R.drawable.ic_play_outlined,
             isAudio = true,
             surahs =allSurahs ,
-            onSearchSurah = { searchedSurah ->
-                allSoraScreenViewModel.getSearchedSurahs(searchedSurah)
+            onSearchSurah = { surah ->
+                searchedSurah = surah
+                allSoraScreenViewModel.getSearchedSurahs(surah)
+
             },
             onClickLastReading = {
                 val lastListening =allSoraScreenViewModel.getLastListeningSurah()
@@ -91,6 +94,7 @@ fun AllSoraAudioScreen(
                 allSoraAudioViewModel.playOrToggleSora(mediaItm, true)
                 allSoraAudioViewModel.showPlayerFullScreen = true
             },
+            searchedSurah =searchedSurah ,
             onClickSora = {
                 allSoraAudioViewModel.playOrToggleSora(mediaItm.copy(mediaId = reciterName + it), true)
                 navController.navigate(Screen.AudioPlayerScreen.createRoute(rewayah))

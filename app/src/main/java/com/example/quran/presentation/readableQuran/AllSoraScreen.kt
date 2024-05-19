@@ -1,6 +1,7 @@
 package com.example.quran.presentation.readableQuran
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +23,20 @@ fun AllSoraTextScreen(
     val allSurah by allSoraScreenViewModel.allSurahs
 
     var lastReading by remember { mutableStateOf("") }
+    var searchedSurah by remember { mutableStateOf("") }
 
     allSoraScreenViewModel.getLastReadingSurah {
         lastReading = it
     }
+
+    LaunchedEffect(searchedSurah) {
+        allSoraScreenViewModel.getSearchedSurahs(searchedSurah)
+    }
+
+//    LaunchedEffect(key1 = Unit ){
+//        allSoraScreenViewModel.init()
+//    }
+
     AllSoraScreen(
         sora = lastReading,
         hizbOrMokri = "سورة",
@@ -33,8 +44,11 @@ fun AllSoraTextScreen(
         onClickLastReading = {
             navController.navigate(Screen.QuranPaperScreen.createRoute(Constants.NAVIGATE_FROM_LAST_READING))
         },
-        onSearchSurah = allSoraScreenViewModel::getSearchedSurahs,
-        onClickPlayIcon = {}
+        onSearchSurah = { surah ->
+            searchedSurah = surah
+        },
+        onClickPlayIcon = {},
+        searchedSurah = searchedSurah
     ) { surahIndex ->
         navController.navigate(Screen.QuranPaperScreen.createRoute(surahIndex))
     }

@@ -13,6 +13,7 @@ import com.batoulapps.adhan.data.DateComponents
 import com.example.quran.data.data_source.Entities.AdhkarEntity
 import com.example.quran.data.repository.DataStoreRepository
 import com.example.quran.data.repository.QuranAndThikrRepositoryImpl
+import com.example.quran.others.AyahPrettyTextTransformer
 import com.example.quran.others.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +49,10 @@ class MainScreenViewModel @Inject constructor(
                 val surah = withContext(Dispatchers.Default) {
                     quranRepository.getSurahName(it.surahIndex)
                 }
+                val ayah = AyahPrettyTextTransformer.removeUnsupportedChars(it.text)
                 _randomAyah.value = RandomAyah(
                     surah = surah,
-                    ayah = it.text,
+                    ayah = ayah,
                     numberInSurah = it.numberInSurah
                 )
             }
@@ -89,10 +91,8 @@ class MainScreenViewModel @Inject constructor(
 //        viewModelScope.launch {
         val location = getLocation()
 
-        Log.d("prayertime", "getPrayerTimes: $location")
         val coordinates = Coordinates(location.lat, location.lng)
         val dateComponent = DateComponents.from(Date())
-        Log.d("prayertime", "getPrayerTimes: ${Date()}")
         val params = getCalculationMethod(calculationMethod)
         val prayerTimes = PrayerTimes(coordinates, dateComponent, params)
 
@@ -104,10 +104,7 @@ class MainScreenViewModel @Inject constructor(
         val maghrib = formatter.format(prayerTimes.maghrib)
         val isha = formatter.format(prayerTimes.isha)
         val nextPrayer = prayerTimes.nextPrayer()
-        Log.d(
-            "prayertimes",
-            "next prayer:name ${prayerTimes.currentPrayer()} , ordinal : ${nextPrayer.ordinal}"
-        )
+
         return listOf(fajr, dhuhr, asr, maghrib, isha, nextPrayer.ordinal.toString())
 //        }
     }
@@ -125,7 +122,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
 
-    init {
+    fun init() {
         getRandom_Ayah_Thikr()
         getRandomHadith()
     }

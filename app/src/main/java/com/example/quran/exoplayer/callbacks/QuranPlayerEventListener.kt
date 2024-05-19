@@ -19,6 +19,6 @@ class QuranPlayerEventListener(
 
     override fun onPlayerError(error: ExoPlaybackException) {
         super.onPlayerError(error)
-        Toast.makeText(quranService, "An unknown error", Toast.LENGTH_LONG).show()
+        Toast.makeText(quranService, "تاكد من اتصالك بالانترنت", Toast.LENGTH_LONG).show()
     }
 }

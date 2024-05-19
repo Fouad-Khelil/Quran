@@ -30,8 +30,6 @@ class RecitersViewModel @Inject constructor(
         getAllReciters(false)
     }
 
-
-
     fun getAllReciters(filterFavorite: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

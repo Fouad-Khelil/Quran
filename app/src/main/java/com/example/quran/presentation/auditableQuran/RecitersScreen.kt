@@ -58,14 +58,17 @@ fun RecitersScreen(
     LaunchedEffect(searchedReciter) {
         recitersViewModel.searchReciter(searchedReciter)
     }
+//    LaunchedEffect(Unit) {
+//        recitersViewModel.init()
+//    }
     val context = LocalContext.current
     val intent = Intent(context, QuranService::class.java).apply {
         putExtra("reciter", reciterId)
     }
 
-    LaunchedEffect(key1 = Unit){
+//    LaunchedEffect(key1 = Unit){
         context.startService(intent)
-    }
+//    }
 
     val dataStore = DataStoreRepository(context)
 
